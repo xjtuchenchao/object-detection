@@ -19,6 +19,7 @@ START_BOUNDING_BOX_ID = 0
 # If necessary, pre-define category and its id
 PRE_DEFINE_CATEGORIES = {"DaoXianYiWu": 0, "DiaoChe": 1, "ShiGongJiXie": 2, "TaDiao": 3, "YanHuo":4}
 
+
 def get(root, name):
     vars = root.findall(name)
     return vars
@@ -97,11 +98,13 @@ def convert(xml_files, json_file):
 
     bnd_id = START_BOUNDING_BOX_ID
     for xml_file in xml_files:
+        print(xml_file)
+
         tree = ET.parse(xml_file)
         root = tree.getroot()
-        filename = get(root, "filename")[0].text
-        filename_num = re.match('[a-zA-Z]*(\d*).jpg', filename).group(1)
-        filename_num = int(filename_num)
+        # filename = get(root, "filename")[0].text
+        # filename_num = re.match('[a-zA-Z]*(\d*).jpg', filename).group(1)
+        # filename_num = int(filename_num)
 
 
         # path = get(root, "path")
@@ -116,9 +119,12 @@ def convert(xml_files, json_file):
         #     raise ValueError("%d paths found in %s" % (len(path), xml_file))
 
 
-        ## The filename must be a number
+        # The filename must be a number
         # image_id = get_filename_as_int(filename)
-        image_id = filename_num    # 当图片的数字不连续时，会不会有什么影响？
+        # image_id = filename_num    # 当图片的数字不连续时，会不会有什么影响？
+
+        filename = os.path.basename(xml_file)[:-3] + 'jpg'
+        image_id = int(os.path.basename(xml_file)[:-4])
         size = get_and_check(root, "size", 1)
         width = int(get_and_check(size, "width", 1).text)
         height = int(get_and_check(size, "height", 1).text)
@@ -139,10 +145,10 @@ def convert(xml_files, json_file):
             category_id = categories[category]
             bndbox = get_and_check(obj, "bndbox", 1)
 
-            xmin = int(get_and_check(bndbox, "xmin", 1).text) - 1
-            ymin = int(get_and_check(bndbox, "ymin", 1).text) - 1
-            xmax = int(get_and_check(bndbox, "xmax", 1).text)
-            ymax = int(get_and_check(bndbox, "ymax", 1).text)
+            xmin = int(float(get_and_check(bndbox, "xmin", 1).text)) - 1
+            ymin = int(float(get_and_check(bndbox, "ymin", 1).text)) - 1
+            xmax = int(float(get_and_check(bndbox, "xmax", 1).text))
+            ymax = int(float(get_and_check(bndbox, "ymax", 1).text))
             assert xmax > xmin
             assert ymax > ymin
             o_width = abs(xmax - xmin)
@@ -177,8 +183,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Convert Pascal VOC annotation to COCO format."
     )
-    parser.add_argument("xml_dir", default='F:/数据集/dataset/train14000 1/train_annotations', help="Directory path to xml files.", type=str)
-    parser.add_argument("json_file", default='F:/数据集/dataset/train14000 1/transmission_line_detection30462.json', help="Output COCO format json file.", type=str)
+    parser.add_argument("--xml-dir", default='F:/数据集/voc2coco-master/dataset/coco_custom/transmission_30462/test_annotations', help="Directory path to xml files.", type=str)
+    parser.add_argument("--json-file", default='F:/数据集/voc2coco-master/dataset/coco_custom/transmission_30462/instances_test30462.json', help="Output COCO format json file.", type=str)
     args = parser.parse_args()
     xml_files = glob.glob(os.path.join(args.xml_dir, "*.xml"))  # 返回以.xml结尾的目录及文件列表
 

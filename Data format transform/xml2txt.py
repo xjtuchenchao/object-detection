@@ -72,21 +72,21 @@ def convert_annotation(image_set, image_id):
     in_file.close()
     out_file.close()
 
-path = 'F:/数据集/dataset/train14000 1/train14000'
+path = r'F:\数据集\voc2coco-master\dataset\coco_custom\transmission_30462'
 # sets = ['train', 'val']
-sets = ['train']
+sets = ['train', 'test']
 for image_set in sets:
     if not os.path.exists('%s/%s'%(path, image_set) + 'labels/'):
         os.makedirs('%s/%s'%(path, image_set) + 'labels/', exist_ok=True)
     image_ids = open('%s/ImageSets/Main/%s.txt'%(path,image_set)).read().strip().split()
     for image_id in image_ids:
         gen_classes(image_id)
-        
+        convert_annotation(image_set, image_id)
+
     print(classes)
-        # convert_annotation(image_set, image_id)
-    # classes_file = open('%s/%s'%(path, image_set) + 'labels/classes.txt', 'w')
-    # classes_file.write("\n".join([a for a in classes]))
-    # classes_file.close()
+    classes_file = open('%s/%s'%(path, image_set) + 'labels/classes.txt', 'w')
+    classes_file.write("\n".join([a for a in classes]))
+    classes_file.close()
 
 
 

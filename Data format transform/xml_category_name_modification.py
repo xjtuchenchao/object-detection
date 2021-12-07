@@ -31,7 +31,7 @@ def modify_one_xml(xml_path):
             pass
     tree.write(xml_path)
 
-path = 'F:/数据集/dataset/train14000 1/train14000/Annotations'
+path = r'F:\数据集\voc2coco-master\dataset\coco_custom\transmission_30462\train_annotations'
 filelist = os.listdir(path)
 xml_name_list = [filename for filename in filelist if filename[-3:] == 'xml']
 print(len(xml_name_list))
